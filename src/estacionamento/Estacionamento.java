@@ -22,7 +22,7 @@ public class Estacionamento extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         //Diego
         Scene scene = new Scene(root);
-        
+        //test
         stage.setScene(scene);
         stage.show();
     }
