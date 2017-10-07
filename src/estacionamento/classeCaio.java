@@ -13,4 +13,5 @@ public class classeCaio {
     int oi;
     int test2;
     int test3;
+    int test4;
 }
