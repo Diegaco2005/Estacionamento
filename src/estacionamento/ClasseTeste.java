@@ -10,5 +10,6 @@ package estacionamento;
  * @author Diego
  */
 public class ClasseTeste {
-    
+    int teste;
+        
 }
