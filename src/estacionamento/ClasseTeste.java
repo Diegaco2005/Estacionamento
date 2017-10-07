@@ -11,5 +11,6 @@ package estacionamento;
  */
 public class ClasseTeste {
     int teste;
-        
+    private void caio(){
+    }
 }
