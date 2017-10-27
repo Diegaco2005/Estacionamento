@@ -5,6 +5,7 @@
  */
 package view;
 
+import java.time.LocalDateTime;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.control.*;
@@ -19,16 +20,16 @@ public class Parametros {
     private Stage paramStage;
 
     @FXML
-    private TextField tfVagas;
+    protected TextField vagas;
 
     @FXML
-    private TextField tfVlBase;
+    protected TextField vlBase;
 
     @FXML
-    private TextField tfVlAdicional;
+    protected TextField vlAdicional;
 
     @FXML
-    private TextField tfHistorico;
+    protected TextField historico;
 
     @FXML
     private Button btConfirmar;
@@ -48,6 +49,62 @@ public class Parametros {
 
     public void setStage(Stage paramStage) {
         this.paramStage = paramStage;
+    }
+
+    /**
+     * @return the vagas
+     */
+    public Integer getVagas() {
+        return Integer.parseInt(vagas.toString());
+    }
+
+    /**
+     * @param tfVagas the vagas to set
+     */
+    public void setVagas(Integer vagas) {
+        this.vagas.setText(vagas.toString());
+    }
+
+    /**
+     * @return the vlBase
+     */
+    public Double getVlBase() {
+        return Double.parseDouble(vlBase.toString());
+    }
+
+    /**
+     * @param tfVlBase the vlBase to set
+     */
+    public void setVlBase(Double vlBase) {
+        this.vlBase.setText(vlBase.toString());
+    }
+
+    /**
+     * @return the vlAdicional
+     */
+    public Double getVlAdicional() {
+        return Double.parseDouble(vlAdicional.toString());
+    }
+
+    /**
+     * @param tfVlAdicional the vlAdicional to set
+     */
+    public void setVlAdicional(Double vlAdicional) {
+        this.vlAdicional.setText(vlAdicional.toString());
+    }
+
+    /**
+     * @return the historico
+     */
+    public String getHistorico() {
+        return historico.toString();
+    }
+
+    /**
+     * @param tfHistorico the historico to set
+     */
+    public void setHistorico(LocalDateTime historico) {
+        this.historico.setText(historico.toString());
     }
 
 }
