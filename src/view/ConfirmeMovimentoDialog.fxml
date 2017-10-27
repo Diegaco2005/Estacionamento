@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="300.0" prefWidth="350.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="view.ConfirmeMovimentoDialogController">
+  <!-- TODO Add Nodes -->
+  <children>
+    <GridPane prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+      <children>
+        <Label text="Entrada:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <Label text="Placa" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label text="Marca" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Label text="Modelo" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Label text="Saida:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+        <Label text="Cor" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Label text="Valor" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+        <Label fx:id="entradaLabel" text="~" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label fx:id="placaLabel" text="~" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label fx:id="marcaLabel" text="~" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label fx:id="corLabel" text="~" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+        <Label fx:id="modelLabel" text="~" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+        <Label fx:id="saidaLabel" text="~" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+        <Label fx:id="valorLabel" text="~" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+      </children>
+      <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="82.0" minWidth="10.0" prefWidth="50.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="114.0" minWidth="10.0" prefWidth="114.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="83.0" minWidth="10.0" prefWidth="48.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="128.0" minWidth="10.0" prefWidth="118.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints maxHeight="60.0" minHeight="10.0" prefHeight="59.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="60.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="98.0" minHeight="10.0" prefHeight="91.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+    </GridPane>
+    <Button layoutX="245.0" layoutY="252.0" mnemonicParsing="false" text="Confirmar" />
+    <Button layoutX="139.0" layoutY="252.0" mnemonicParsing="false" text="Cancelar" />
+  </children>
+</AnchorPane>
