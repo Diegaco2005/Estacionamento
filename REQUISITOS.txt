@@ -1,0 +1,21 @@
+﻿-Login
+	-usuario e senha
+-Tela principal
+	-Formulario
+		-Campo placa do veiculo
+	
+	-Registra entrada e saida
+	
+	-Login, numero de vagas ou LOTADO
+	-botao edita tabela de preço
+	-botao sair
+
+-Janela ao veiculo entrar
+	-placa, marca, modelo, cor, a hora que entrou
+	-AO SAIR: hora da sai, valor
+	
+-Cadastro veiculo(nava janela)
+	-Placa, marca, modelo e cor
+
+-Tabela de preços
+	
