@@ -13,7 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import util.ConnectionFactory;
 import util.DateUtil;
-import view.Parametros;
+import view.ParametrosViewController;
 
 /**
  *
@@ -24,7 +24,7 @@ public class ParametrosDAO {
 	public ParametrosDAO() throws SQLException{
 		this.connection = ConnectionFactory.getConnectionFactory();
 	}
-	public void atualiza(Parametros parametros) throws SQLException{
+	public void atualiza(ParametrosViewController parametros) throws SQLException{
 		PreparedStatement stmt = this.connection.prepareStatement("UPDATE opcoes SET vagas = ?, preco_entrada = ?, preco_hora = ?, alterado = ?");
 		//System.out.println(movimento.getEntra().toString());
 		stmt.setInt(1, parametros.getVagas());
@@ -35,23 +35,22 @@ public class ParametrosDAO {
 		stmt.execute();
 		stmt.close();
 	}
-	public ObservableList<Parametros> acessa() throws SQLException{
+	public Parametros acessa() throws SQLException{
 		PreparedStatement stmt = this.connection.prepareStatement("select vagas, preco_entrada, preco_hora, alterado FROM opcoes");
 		ResultSet rs = stmt.executeQuery();
-		ObservableList<Parametros> ParametrosData = FXCollections.observableArrayList();
-	       while (rs.next()) {
+		ObservableList<ParametrosViewController> ParametrosData = FXCollections.observableArrayList();
+		Parametros parametros = new Parametros();
+		while (rs.next()) {
 
-	    	   Parametros parametros = new Parametros();
-	    	   parametros.setVagas(rs.getInt("vagas"));
-	    	   parametros.setVlBase(rs.getDouble("preco_entrada"));
-	    	   parametros.setVlAdicional(rs.getDouble("preco_hora"));
-	    	   parametros.setHistorico(DateUtil.parseToSql(rs.getString("alterado")));
 
-	    	   ParametrosData.add(parametros);
-	       }
-	       rs.close();
-	       return ParametrosData;
+    	   parametros.setVagas(rs.getInt("vagas"));
+    	   parametros.setValorEntrada(rs.getDouble("preco_entrada"));
+    	   parametros.setValorHora(rs.getDouble("preco_hora"));
+
+       }
+       rs.close();
+       return parametros;
 	}
 
-    
+
 }

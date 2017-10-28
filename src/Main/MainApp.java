@@ -2,8 +2,10 @@ package Main;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import javafx.application.Application;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -14,8 +16,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Movimento;
 import model.MovimentoDAO;
+import model.Parametros;
+import model.ParametrosDAO;
 import model.Veiculo;
 import model.VeiculoDAO;
+import view.ConfirmeMovimentoDialogController;
 import view.PrincipalViewController;
 import view.VeiculoAddDialogController;
 
@@ -25,6 +30,7 @@ public class MainApp extends Application {
 	 private BorderPane rootLayout;
 	 private ObservableList<Movimento> movimentoData = FXCollections.observableArrayList();
 	 private ObservableList<Veiculo> veiculoData = FXCollections.observableArrayList();
+	 private Parametros paramentos;
 
 	 public MainApp() throws SQLException{
         // Add some sample data
@@ -33,8 +39,11 @@ public class MainApp extends Application {
 		 MovimentoDAO movimentodao = new MovimentoDAO();
 		 this.movimentoData = movimentodao.selectAll();
 
+		 ParametrosDAO parametrosdao = new ParametrosDAO();
+		 this.paramentos = parametrosdao.acessa();
+		 //System.out.println(LocalDateTime.of(1800, 1, 12, 0, 0));
 		 for(Movimento moviemnto : movimentoData){
-			 System.out.println(moviemnto.getEntra().toString());
+			 System.out.println(moviemnto.getSaida().toString());
 		 }
     }
 	 /**
@@ -46,6 +55,9 @@ public class MainApp extends Application {
 	}
 	public ObservableList<Veiculo> getVeiculoData() {
 	    return veiculoData;
+	}
+	public Parametros getParametros() {
+	    return paramentos;
 	}
 
 	@Override
@@ -115,16 +127,16 @@ public class MainApp extends Application {
 
     		// Cria o palco dialogStage.
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Edit Person");
+            dialogStage.setTitle("Confirme");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
             // Define a pessoa no controller.
-            VeiculoAddDialogController controller = loader.getController();
+            ConfirmeMovimentoDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
-            //controller.setMovimento(movimento);
+            controller.setMovimento(movimento);
 
             // Mostra a janela e espera até o usuário fechar.
             dialogStage.showAndWait();

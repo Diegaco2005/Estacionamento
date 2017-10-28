@@ -1,6 +1,7 @@
 package view;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import model.Login;
 import model.Movimento;
+import model.Parametros;
 import model.Veiculo;
 
 public class PrincipalViewController {
@@ -106,35 +108,54 @@ public class PrincipalViewController {
     		//VERIFICA ENTRADA OU SAIDA
         	ObservableList<Movimento> movimentoData = mainApp.getMovimentoData();
         	boolean controleEntrada = true;
+        	placaConsulta = veiculoConsulta.getPlaca();
         	Movimento movimentoConsulta = new Movimento();
         	for(Movimento movimento: movimentoData){
-        		placaConsulta = veiculoConsulta.getPlaca();
         		String placaMovimento = movimento.getVeiculo().getPlaca();
         		//VERIFICA ENTRADA OU SAIDA
-        		/*if((placaConsulta.compareTo(placaMovimento) == 0) && (movimento.equals(LocalDateTime.of(1800, 1, 12, 0, 0)))){
+
+        		if((placaConsulta == placaMovimento) && (movimento.verificarSaidaPendente())){
         			controleEntrada = false;
         			movimentoConsulta = movimento;
-        		}*/
+        		}
         	}
-        	 boolean okClicked = mainApp.showConfirmeMovimentoDialogController(movimentoConsulta);
-             if (okClicked) {
-                 //showPersonDetails(selectedPerson);
-             }
+
 
         	//CADASTRA ENTRADA OU SAIDA
-       /* 	if(controleEntrada){
+    		if(controleEntrada){
         		//ENTRANDO - ADD MOVIMENTO
-        		movimentoConsulta.setEntrada(LocalDateTime.now());
-        		movimentoConsulta.setVeiculo(veiculoConsulta);
+       			movimentoConsulta.setVeiculo(veiculoConsulta);
+		   		boolean okClicked = mainApp.showConfirmeMovimentoDialogController(movimentoConsulta);
+		        if (okClicked){
+	        		mainApp.getMovimentoData().add(movimentoConsulta);
+	        		movimentoConsulta.salveEntrada();
+	        		System.out.print(LocalDateTime.now());
+		        }
 
-        		mainApp.getMovimentoData().add(movimentoConsulta);
-        		movimentoConsulta.salve();
-        		System.out.print(LocalDateTime.now());
         	}else{
         		//SAINDO - ADD HORA DE SAIDA
-        		System.out.println("SAIU");
+        		movimentoConsulta.setSaida(LocalDateTime.now());
+        		//mainApp.getMovimentoData().add(movimentoConsulta);
+        		Duration duracao = Duration.between(movimentoConsulta.getEntra(), movimentoConsulta.getSaida());
+        		System.out.println(duracao.toHours());
+        		Double valorContabilizado = 0.01;
+        		Parametros parametros = mainApp.getParametros();
+        		valorContabilizado = parametros.getValorEntrada();
+        		valorContabilizado += (parametros.getValorHora()*duracao.toHours());
+        		movimentoConsulta.setValor(valorContabilizado);
+        		boolean okClicked = mainApp.showConfirmeMovimentoDialogController(movimentoConsulta);
+		        if (okClicked) {
+
+	        		//System.out.print(LocalDateTime.now());
+	        		movimentoConsulta.salveSaida();
+	        		System.out.println("SAIU");
+		        }else{
+		        	movimentoConsulta.setSaida(LocalDateTime.of(1800, 1, 12, 0, 0));
+		        	movimentoConsulta.setValor(0.00);
+		        }
+
         	}
-*/
+
     	}
 
     }
