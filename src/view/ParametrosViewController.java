@@ -5,11 +5,16 @@
  */
 package view;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import model.Movimento;
+import model.Parametros;
+import util.MaskTextField;
 
 /**
  *
@@ -20,16 +25,14 @@ public class ParametrosViewController {
     private Stage paramStage;
 
     @FXML
-    protected TextField vagas;
+    protected MaskTextField vagas;
 
     @FXML
-    protected TextField vlBase;
+    protected MaskTextField vlBase;
 
     @FXML
-    protected TextField vlAdicional;
+    protected MaskTextField vlAdicional;
 
-    @FXML
-    protected TextField historico;
 
     @FXML
     private Button btConfirmar;
@@ -37,74 +40,76 @@ public class ParametrosViewController {
     @FXML
     private Button btSair;
 
+    private Stage dialogStage;
+    private Parametros parametros;
+    private boolean okClicked = false;
+
+    @FXML
+   	private void initialize(){
+    	vagas.setMask("N!");
+    	//vlBase.setMask("N!.N!");
+    	//vlAdicional.setMask("N!,NN");
+   	}
+    public ParametrosViewController(){
+    }
+    public void setParametros(Parametros parametros){
+    	DecimalFormat df = new java.text.DecimalFormat("#,###,##0.00");
+		this.parametros = parametros;
+		vagas.setText(parametros.getVagas().toString());
+		vlBase.setText(df.format(parametros.getValorEntrada()));
+		vlAdicional.setText(df.format(parametros.getValorHora()));
+	}
+	public boolean isOkClicked(){
+		return okClicked;
+	}
+	public void setDialogStage(Stage dialogStage){
+		this.dialogStage = dialogStage;
+	}
+
     @FXML
     private void handleButtonConfirmar(ActionEvent event) {
+    	if (isInputValid()) {
+    		this.parametros.setVagas(Integer.parseInt(vagas.getText()));
+    		this.parametros.setValorEntrada(Double.parseDouble(vlBase.getText().replace(",", ".")));
+    		this.parametros.setValorHora(Double.parseDouble(vlAdicional.getText().replace(",", ".")));
+
+
+            okClicked = true;
+            dialogStage.close();
+        }
 
     }
 
     @FXML
     private void handleButtonSair(ActionEvent event) {
-        paramStage.close();
+    	dialogStage.close();
     }
 
-    public void setStage(Stage paramStage) {
-        this.paramStage = paramStage;
-    }
+    private boolean isInputValid() {
+    	String errorMessage = "";
+        if (vagas.getText() == null || vagas.getText().length() == 0) {
+            errorMessage += "Numero de vagas é obrigatoria!\n";
+        }
+        if (vlBase.getText() == null || vlBase.getText().length() == 0) {
+            errorMessage += "Valor base é obrigatorio!\n";
+        }
+        if (vlAdicional.getText() == null || vlAdicional.getText().length() == 0) {
+            errorMessage += "Valor da hora é obrigatorio!\n";
+        }
 
-    /**
-     * @return the vagas
-     */
-    public Integer getVagas() {
-        return Integer.parseInt(vagas.toString());
-    }
 
-    /**
-     * @param tfVagas the vagas to set
-     */
-    public void setVagas(Integer vagas) {
-        this.vagas.setText(vagas.toString());
-    }
+        if (errorMessage.length() == 0) {
+            return true;
+        } else {
+            // Mostra a mensagem de erro.
+            Alert alert = new Alert(AlertType.ERROR);
+                      alert.setTitle("Campos Inválidos");
+                      alert.setHeaderText("Por favor, corrija os campos inválidos");
+                      alert.setContentText(errorMessage);
+                alert.showAndWait();
 
-    /**
-     * @return the vlBase
-     */
-    public Double getVlBase() {
-        return Double.parseDouble(vlBase.toString());
-    }
-
-    /**
-     * @param tfVlBase the vlBase to set
-     */
-    public void setVlBase(Double vlBase) {
-        this.vlBase.setText(vlBase.toString());
-    }
-
-    /**
-     * @return the vlAdicional
-     */
-    public Double getVlAdicional() {
-        return Double.parseDouble(vlAdicional.toString());
-    }
-
-    /**
-     * @param tfVlAdicional the vlAdicional to set
-     */
-    public void setVlAdicional(Double vlAdicional) {
-        this.vlAdicional.setText(vlAdicional.toString());
-    }
-
-    /**
-     * @return the historico
-     */
-    public String getHistorico() {
-        return historico.toString();
-    }
-
-    /**
-     * @param tfHistorico the historico to set
-     */
-    public void setHistorico(LocalDateTime historico) {
-        this.historico.setText(historico.toString());
-    }
+            return false;
+        }
+	 }
 
 }

@@ -1,5 +1,7 @@
 package model;
 
+import java.sql.SQLException;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -7,6 +9,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public class Parametros {
 	private final IntegerProperty vagas;
+
 	private final DoubleProperty valorEntrada;
 	private final DoubleProperty valorHora;
 
@@ -19,8 +22,12 @@ public class Parametros {
 		this.valorEntrada = new SimpleDoubleProperty(valorEntrada);
 		this.valorHora = new SimpleDoubleProperty(valorHora);
 	}
+	public void salva() throws SQLException{
+		ParametrosDAO parametrosdao = new ParametrosDAO();
+		parametrosdao.atualiza(this);
+	}
 
-	public Integer getvagas() {
+	public Integer getVagas() {
 		return this.vagas.get();
 	}
 	public void setVagas(Integer vagas) {

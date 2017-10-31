@@ -45,7 +45,7 @@ public class MovimentoDAO {
 		stmt.close();
 	}
 	public ObservableList<Movimento> selectAll() throws SQLException{
-		PreparedStatement stmt = this.connection.prepareStatement("select id, entra, saida, valor, id_veiculo, id_login FROM movimento");
+		PreparedStatement stmt = this.connection.prepareStatement("SELECT id, entra, saida, valor, id_veiculo, id_login, placa, cor, modelo, marca FROM movimento INNE JOIN veiculo using(id_veiculo);");
 		ResultSet rs = stmt.executeQuery();
 		ObservableList<Movimento> movimentoData = FXCollections.observableArrayList();
 	       while (rs.next()) {
@@ -54,9 +54,9 @@ public class MovimentoDAO {
 	    	   movimento.setId(rs.getInt("id"));
 	    	   movimento.setEntrada(DateUtil.parseToSql(rs.getString("entra")));
 	    	   movimento.setSaida(DateUtil.parseToSql(rs.getString("saida")));
-	    	   System.out.println("SAIDA SQL "+DateUtil.parseToSql(rs.getString("saida")));
+	    	   //System.out.println("SAIDA SQL "+DateUtil.parseToSql(rs.getString("saida")));
 	    	   movimento.setValor(rs.getDouble("valor"));
-	    	   movimento.setVeiculo(new Veiculo(rs.getInt("id_veiculo")));
+	    	   movimento.setVeiculo(new Veiculo(rs.getInt("id_veiculo"), rs.getString("placa"), rs.getString("marca"), rs.getString("modelo" ), rs.getString("cor" )));
 	    	   movimento.setLogin(new Login(rs.getInt("id_login")));
 
 	    	   movimentoData.add(movimento);

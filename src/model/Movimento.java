@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -45,6 +46,9 @@ public class Movimento {
 
     public boolean verificarSaidaPendente(){
     	return this.saida.equals(entra);
+    }
+    public Duration verificaHoras(){
+    	return Duration.between(this.getEntra(), this.getSaida());
     }
     public void salveEntrada() throws SQLException{
     	MovimentoDAO movimentodao = new MovimentoDAO();

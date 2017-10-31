@@ -1,5 +1,6 @@
 package view;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.Movimento;
 import model.Veiculo;
+import util.DateUtil;
 
 public class ConfirmeMovimentoDialogController {
 
@@ -49,14 +51,14 @@ public class ConfirmeMovimentoDialogController {
 	}
 	public void setMovimento(Movimento movimento){
 		this.movimento = movimento;
-		entradaLabel.setText(movimento.getEntra().toString());
+		entradaLabel.setText(DateUtil.format(movimento.getEntra()));
 
 		if(movimento.verificarSaidaPendente()){
 			entradasaidaLabel.setText("ENTRANDO");
 			saidaLabel.setText("");
 		}else{
-			entradasaidaLabel.setText("SAINDO");
-			saidaLabel.setText(movimento.getSaida().toString());
+			entradasaidaLabel.setText("SAINDO - Hora: "+movimento.verificaHoras().toHours());
+			saidaLabel.setText(DateUtil.format(movimento.getSaida()));
 
 		}
 
@@ -64,7 +66,8 @@ public class ConfirmeMovimentoDialogController {
 		marcaLabel.setText(movimento.getVeiculo().getMarca());
 		modelLabel.setText(movimento.getVeiculo().getModelo());
 		corLabel.setText(movimento.getVeiculo().getCor());
-		valorLabel.setText(String.valueOf(movimento.getValor()));
+		DecimalFormat df = new java.text.DecimalFormat("#,###,##0.00");
+		valorLabel.setText("R$ "+df.format(movimento.getValor()));
 	}
 	public boolean isOkClicked(){
 		return okClicked;

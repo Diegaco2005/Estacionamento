@@ -11,12 +11,12 @@
     <GridPane prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
       <children>
         <Label text="Entrada:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <Label text="Placa" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <Label text="Marca" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <Label text="Modelo" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Label text="Placa:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label text="Marca:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Label text="Modelo:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
         <Label text="Saida:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-        <Label text="Cor" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-        <Label text="Valor" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+        <Label text="Cor:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Label text="Valor:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
         <Label fx:id="entradaLabel" text="~" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Label fx:id="placaLabel" text="~" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <Label fx:id="marcaLabel" text="~" GridPane.columnIndex="1" GridPane.rowIndex="2" />

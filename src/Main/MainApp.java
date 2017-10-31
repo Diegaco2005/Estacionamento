@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Login;
 import model.Movimento;
 import model.MovimentoDAO;
 import model.Parametros;
@@ -21,6 +22,8 @@ import model.ParametrosDAO;
 import model.Veiculo;
 import model.VeiculoDAO;
 import view.ConfirmeMovimentoDialogController;
+import view.LoginViewController;
+import view.ParametrosViewController;
 import view.PrincipalViewController;
 import view.VeiculoAddDialogController;
 
@@ -30,22 +33,30 @@ public class MainApp extends Application {
 	 private BorderPane rootLayout;
 	 private ObservableList<Movimento> movimentoData = FXCollections.observableArrayList();
 	 private ObservableList<Veiculo> veiculoData = FXCollections.observableArrayList();
-	 private Parametros paramentos;
+	 private Parametros parametros;
+	 private Login login;
+	 private Integer vagasOcup = 0;
 
 	 public MainApp() throws SQLException{
         // Add some sample data
-		 VeiculoDAO veiculodao = new VeiculoDAO();
+		VeiculoDAO veiculodao = new VeiculoDAO();
 		 this.veiculoData = veiculodao.selectAll();
 		 MovimentoDAO movimentodao = new MovimentoDAO();
-		 this.movimentoData = movimentodao.selectAll();
+		this.movimentoData = movimentodao.selectAll();
+		ParametrosDAO parametrosdao = new ParametrosDAO();
+		this.parametros = parametrosdao.acessa();
+		contaVagasOcup();
 
-		 ParametrosDAO parametrosdao = new ParametrosDAO();
-		 this.paramentos = parametrosdao.acessa();
-		 //System.out.println(LocalDateTime.of(1800, 1, 12, 0, 0));
-		 for(Movimento moviemnto : movimentoData){
-			 System.out.println(moviemnto.getSaida().toString());
-		 }
+
     }
+	public void contaVagasOcup() throws SQLException{
+		 for(Movimento moviemnto : movimentoData){
+			 if(moviemnto.verificarSaidaPendente()){
+				 vagasOcup++;
+			 }
+			 System.out.println(vagasOcup);
+		 }
+	}
 	 /**
 	 * Retorna os dados como uma observable list de Movimento.
 	 * @return
@@ -56,19 +67,31 @@ public class MainApp extends Application {
 	public ObservableList<Veiculo> getVeiculoData() {
 	    return veiculoData;
 	}
+	public Login getLogin(){
+		return this.login;
+	}
 	public Parametros getParametros() {
-	    return paramentos;
+	    return this.parametros;
+	}
+	public Integer getVagasOcup() {
+	    return this.vagasOcup;
+	}
+	public void setVagasOcup(Integer vagasOcup) {
+	    this.vagasOcup = vagasOcup;
 	}
 
+	public void setParametros(Parametros parametros){
+		this.parametros = parametros;
+	}
 	@Override
 	public void start(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("Estacionamento");
+		if(showLoginView()){
+			initRootLayout();
+			showPrincipalOverview();
+		}
 
-		 this.primaryStage = primaryStage;
-	        this.primaryStage.setTitle("Estacionamento");
-
-	        initRootLayout();
-
-	        showPrincipalOverview();
 	}
     /**
      * Inicializa o root layout (layout base).
@@ -88,6 +111,38 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
+    public boolean showLoginView(){
+    	try{
+    		// Carrega o arquivo fxml e cria um novo stage para a janela popup
+    		FXMLLoader loader = new FXMLLoader();
+    		loader.setLocation(MainApp.class.getResource("../view/LoginView.fxml"));
+    		AnchorPane page = (AnchorPane) loader.load();
+
+    		// Cria o palco dialogStage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Login");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Define no controller.
+            LoginViewController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+
+            // Mostra a janela e espera até o usuário fechar.
+            dialogStage.showAndWait();
+            if(controller.isOkLogin()){
+            	this.login = controller.getLogin();
+            }
+
+            return controller.isOkLogin();
+
+    	}catch(IOException e) {
+            e.printStackTrace();
+            return false;
+    	}
+    }
     public boolean showVeiculoAddDialog(Veiculo veiculo){
     	try{
     		// Carrega o arquivo fxml e cria um novo stage para a janela popup
@@ -97,7 +152,7 @@ public class MainApp extends Application {
 
     		// Cria o palco dialogStage.
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Edit Person");
+            dialogStage.setTitle("Cadastra veiculo");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
@@ -118,6 +173,40 @@ public class MainApp extends Application {
             return false;
     	}
     }
+    public boolean showOpcoesView(){
+    	try{
+    		// Carrega o arquivo fxml e cria um novo stage para a janela popup
+    		FXMLLoader loader = new FXMLLoader();
+    		loader.setLocation(MainApp.class.getResource("../view/ParametrosView.fxml"));
+    		AnchorPane page = (AnchorPane) loader.load();
+
+    		// Cria o palco dialogStage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Opções");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+
+            // Define a pessoa no controller.
+            ParametrosViewController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setParametros(this.parametros);
+
+            // Mostra a janela e espera até o usuário fechar.
+            dialogStage.showAndWait();
+
+
+            return controller.isOkClicked();
+
+    	}catch(IOException e) {
+            e.printStackTrace();
+            return false;
+    	}
+
+    }
+
     public boolean showConfirmeMovimentoDialogController(Movimento movimento){
     	try{
     		// Carrega o arquivo fxml e cria um novo stage para a janela popup
@@ -127,7 +216,7 @@ public class MainApp extends Application {
 
     		// Cria o palco dialogStage.
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Confirme");
+            dialogStage.setTitle("Comfirma movimento");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
@@ -148,9 +237,6 @@ public class MainApp extends Application {
             return false;
     	}
     }
-    /**
-     * Mostra o person overview dentro do root layout.
-     */
     public void showPrincipalOverview() {
         try {
             // Carrega o person overview.
@@ -164,6 +250,7 @@ public class MainApp extends Application {
             // Dá ao controlador acesso à the main app.
             PrincipalViewController controller = loader.getController();
             controller.setMainApp(this);
+            controller.showDetails();
         } catch (IOException e) {
             e.printStackTrace();
         }

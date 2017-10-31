@@ -1,8 +1,9 @@
 package view;
 
+
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import Main.MainApp;
@@ -11,37 +12,50 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import model.Login;
 import model.Movimento;
 import model.Parametros;
 import model.Veiculo;
+import util.MaskTextField;
 
 public class PrincipalViewController {
 	@FXML
-    private Label login;
+    private Label loginLb;
     @FXML
     private Label vagas;
     @FXML
-    private TextField placaField;
+    private Label vrHora;
+    @FXML
+    private Label vrHoraAdicional;
+    @FXML
+    private MaskTextField placaField;
 
     // Reference to the main application.
     private MainApp mainApp;
 
     public PrincipalViewController(){
-    	 //firstNameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-         //lastNameColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
     }
 
 
-    public void showDetails(Login login, String vagas){
-    	if(login != null){
-    		this.login.setText(login.getlogin());
-    		this.vagas.setText(vagas);
+    public void showDetails(){
+    	Login login = mainApp.getLogin();
+    	Parametros parametros = mainApp.getParametros();
+    	Integer vagasOcupadas = mainApp.getVagasOcup();
+    	if(login != null && parametros != null){
+    		DecimalFormat df = new java.text.DecimalFormat("#,###,##0.00");
+    		this.loginLb.setText(login.getlogin());
+    		Integer vagasSobrando = parametros.getVagas() - vagasOcupadas;
+    		if(vagasSobrando > 0){
+    			this.vagas.setText(vagasSobrando.toString());
+    		}else{
+    			this.vagas.setText("LOTADO");
+    		}
+
+    		this.vrHora.setText("R$ "+df.format(parametros.getValorEntrada()));
+    		this.vrHoraAdicional.setText("R$ "+df.format(parametros.getValorHora()));
     	}else{
-    		this.login.setText("1~");
+    		this.loginLb.setText("~");
     		this.vagas.setText("0");
 
     	}
@@ -51,10 +65,12 @@ public class PrincipalViewController {
 
     @FXML
     private void initialize(){
-    	showDetails(null, null);
-
-
+    	placaField.setMask("LLL-NNNN");
+    	placaField.textProperty().addListener((ov, oldValue, newValue) -> {
+    		placaField.setText(newValue.toUpperCase());
+    	});
     }
+
     /**
      * É chamado pela aplicação principal para dar uma referência de volta a si mesmo.
      *
@@ -65,117 +81,152 @@ public class PrincipalViewController {
 
 
     }
-    @FXML
-    private void handleAddEMovimento() {
 
-    	Alert alert = new Alert(AlertType.WARNING);
-        alert.setTitle("Nenhuma seleção");
-        alert.setHeaderText("Nenhuma Pessoa Selecionada");
-        alert.setContentText("Por favor, selecione uma pessoa na tabela.");
-
-        alert.showAndWait();
-
-    }
     @FXML
     private void handleMovimento() throws SQLException {
     	//GET PLACA DO TEXT FIELD
-    	String placaConsulta = placaField.getText();
-    	Veiculo veiculoConsulta = new Veiculo();
-    	//VERIFICA CARRO CADASTRADO
-    	ObservableList<Veiculo> veiculoData = mainApp.getVeiculoData();
-    	boolean controleCadastrado = false;
-    	//VERIFICA SE O VEICULO ESTA CADASTRADO
-    	for(Veiculo veiculo: veiculoData){
-    		if(placaConsulta.compareTo(veiculo.getPlaca()) == 0){
-    			controleCadastrado = true;
-    			veiculoConsulta = veiculo;
-    		}
-    	}
 
-    	if(!controleCadastrado){
-    		//CADASTRA NOVO VEICULO
-    		Veiculo tempVeiculo = new Veiculo(placaConsulta);
-            boolean okClicked = mainApp.showVeiculoAddDialog(tempVeiculo);
-            if (okClicked) {
-            	mainApp.getVeiculoData().add(tempVeiculo);
-            	tempVeiculo.salve();
-            	veiculoConsulta = tempVeiculo;
-            }else{
-            	veiculoConsulta = null;
-            }
-    	}
-    	if(veiculoConsulta != null){
-    		//VERIFICA ENTRADA OU SAIDA
-        	ObservableList<Movimento> movimentoData = mainApp.getMovimentoData();
-        	boolean controleEntrada = true;
-        	placaConsulta = veiculoConsulta.getPlaca();
-        	Movimento movimentoConsulta = new Movimento();
-        	for(Movimento movimento: movimentoData){
-        		String placaMovimento = movimento.getVeiculo().getPlaca();
-        		//VERIFICA ENTRADA OU SAIDA
-
-        		if((placaConsulta == placaMovimento) && (movimento.verificarSaidaPendente())){
-        			controleEntrada = false;
-        			movimentoConsulta = movimento;
+    	if(isInputValid()){
+    		String placaConsulta = placaField.getText();
+    		Veiculo veiculoConsulta = new Veiculo();
+        	//VERIFICA CARRO CADASTRADO
+        	ObservableList<Veiculo> veiculoData = mainApp.getVeiculoData();
+        	boolean controleCadastrado = false;
+        	//VERIFICA SE O VEICULO ESTA CADASTRADO
+        	for(Veiculo veiculo: veiculoData){
+        		if(placaConsulta.compareTo(veiculo.getPlaca()) == 0){
+        			controleCadastrado = true;
+        			veiculoConsulta = veiculo;
         		}
         	}
 
+        	if(!controleCadastrado){
+        		//CADASTRA NOVO VEICULO
+        		Veiculo tempVeiculo = new Veiculo(placaConsulta);
+                boolean okClicked = mainApp.showVeiculoAddDialog(tempVeiculo);
+                if (okClicked) {
+                	mainApp.getVeiculoData().add(tempVeiculo);
+                	tempVeiculo.salve();
+                	veiculoConsulta = tempVeiculo;
+                }else{
+                	veiculoConsulta = null;
+                }
+        	}
+        	if(veiculoConsulta != null){
+        		//VERIFICA ENTRADA OU SAIDA
+            	ObservableList<Movimento> movimentoData = mainApp.getMovimentoData();
+            	boolean controleEntrada = true;
+            	placaConsulta = veiculoConsulta.getPlaca();
+            	Movimento movimentoConsulta = new Movimento();
+            	for(Movimento movimento: movimentoData){
+            		String placaMovimento = movimento.getVeiculo().getPlaca();
+            		//VERIFICA ENTRADA OU SAIDA
+            		//System.out.println(movimento.verificarSaidaPendente());
+            		if(placaMovimento.equals(placaConsulta)){
+            			if(movimento.verificarSaidaPendente()){
+            				controleEntrada = false;
+                			movimentoConsulta = movimento;
+            			}
 
-        	//CADASTRA ENTRADA OU SAIDA
-    		if(controleEntrada){
-        		//ENTRANDO - ADD MOVIMENTO
-       			movimentoConsulta.setVeiculo(veiculoConsulta);
-		   		boolean okClicked = mainApp.showConfirmeMovimentoDialogController(movimentoConsulta);
-		        if (okClicked){
-	        		mainApp.getMovimentoData().add(movimentoConsulta);
-	        		movimentoConsulta.salveEntrada();
-	        		System.out.print(LocalDateTime.now());
-		        }
+            		}
+            	}
 
-        	}else{
-        		//SAINDO - ADD HORA DE SAIDA
-        		movimentoConsulta.setSaida(LocalDateTime.now());
-        		//mainApp.getMovimentoData().add(movimentoConsulta);
-        		Duration duracao = Duration.between(movimentoConsulta.getEntra(), movimentoConsulta.getSaida());
-        		System.out.println(duracao.toHours());
-        		Double valorContabilizado = 0.01;
-        		Parametros parametros = mainApp.getParametros();
-        		valorContabilizado = parametros.getValorEntrada();
-        		valorContabilizado += (parametros.getValorHora()*duracao.toHours());
-        		movimentoConsulta.setValor(valorContabilizado);
-        		boolean okClicked = mainApp.showConfirmeMovimentoDialogController(movimentoConsulta);
-		        if (okClicked) {
 
-	        		//System.out.print(LocalDateTime.now());
-	        		movimentoConsulta.salveSaida();
-	        		System.out.println("SAIU");
-		        }else{
-		        	movimentoConsulta.setSaida(LocalDateTime.of(1800, 1, 12, 0, 0));
-		        	movimentoConsulta.setValor(0.00);
-		        }
+            	//CADASTRA ENTRADA OU SAIDA
+        		if(controleEntrada){
+            		//ENTRANDO - ADD MOVIMENTO
+           			movimentoConsulta.setVeiculo(veiculoConsulta);
+    		   		boolean okClicked = mainApp.showConfirmeMovimentoDialogController(movimentoConsulta);
+    		        if (okClicked){
+    	        		mainApp.getMovimentoData().add(movimentoConsulta);
+    	        		movimentoConsulta.salveEntrada();
+    	        		Integer vagasOcup = mainApp.getVagasOcup();
+    	        		vagasOcup++;
+    	        		mainApp.setVagasOcup(vagasOcup);
+    	        		showDetails();
+    	        		//System.out.print(LocalDateTime.now());
+    		        }
+            	}else{
+            		//SAINDO - ADD HORA DE SAIDA
+            		movimentoConsulta.setSaida(LocalDateTime.now());
+            		//mainApp.getMovimentoData().add(movimentoConsulta);
+            		Duration duracao = movimentoConsulta.verificaHoras();
+            		//System.out.println(duracao.toHours());
+            		Double valorContabilizado = 0.01;
+            		Parametros parametros = mainApp.getParametros();
+            		valorContabilizado = parametros.getValorEntrada();
+            		valorContabilizado += (parametros.getValorHora()*duracao.toHours());
+            		movimentoConsulta.setValor(valorContabilizado);
+            		boolean okClicked = mainApp.showConfirmeMovimentoDialogController(movimentoConsulta);
+    		        if (okClicked) {
+
+    	        		//System.out.print(LocalDateTime.now());
+    	        		movimentoConsulta.salveSaida();
+    	        		Integer vagasOcup = mainApp.getVagasOcup();
+    	        		vagasOcup--;
+    	        		mainApp.setVagasOcup(vagasOcup);
+    	        		showDetails();
+    	        		//System.out.println("SAIU");
+    		        }else{
+    		        	movimentoConsulta.setSaida(movimentoConsulta.getEntra());
+    		        	movimentoConsulta.setValor(0.00);
+    		        }
+
+            	}
 
         	}
-
     	}
 
-    }
-/*
-    @FXML
-    private void handleEditPerson() {
-    	Veiculo selectedVeiculo = personTable.getSelectionModel().getSelectedItem();
-        if (selectedPerson != null) {
-            boolean okClicked = mainApp.showPersonEditDialog(selectedPerson);
-            if (okClicked) {
-                showPersonDetails(selectedPerson);
-            }
 
-        } else {
-            // Nada seleciondo.
-            Alert alert = new Alert(AlertType.WARNING);
-                alert.setTitle("Nenhuma seleção");
-                alert.setHeaderText("Nenhuma Pessoa Selecionada");
-                alert.setContentText("Por favor, selecione uma pessoa na tabela.");
-                alert.showAndWait();
+    }
+    private boolean isInputValid() {
+    	String errorMessage = "";
+        if (placaField.getText() == null || placaField.getText().length() == 0) {
+            errorMessage += "Placa é obrigatoria!\n";
         }
-    }*/
+        if(placaField.getLength() < 8 ){
+        	errorMessage += "Placa inválido!\n";
+        }
+
+        if (errorMessage.length() == 0) {
+            return true;
+        } else {
+            // Mostra a mensagem de erro.
+            Alert alert = new Alert(AlertType.ERROR);
+                      alert.setTitle("Campos Inválidos");
+                      alert.setHeaderText("Por favor, corrija os campos inválidos");
+                      alert.setContentText(errorMessage);
+                alert.showAndWait();
+
+            return false;
+        }
+    }
+    @FXML
+    private void handleOpcoes() throws SQLException{
+
+        boolean okClicked = mainApp.showOpcoesView();
+        if (okClicked) {
+        	Parametros parametros = mainApp.getParametros();
+        	try {
+				parametros.salva();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	Login login = mainApp.getLogin();
+        	showDetails();
+        	// Mostra a mensagem de erro.
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+              alert.setTitle("Sucesso!");
+              alert.setHeaderText("Valores alterado com sucesso");
+              alert.setContentText("As alterações foram salvas!");
+            alert.showAndWait();
+        }
+    }
+    @FXML
+    private void handleSair(){
+    	mainApp.getPrimaryStage().close();
+
+    }
+
 }

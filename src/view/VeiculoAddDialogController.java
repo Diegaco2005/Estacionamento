@@ -1,13 +1,16 @@
 package view;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import model.Veiculo;
+import util.MaskTextField;
 
 public class VeiculoAddDialogController {
 	@FXML
-	private TextField placaField;
+	private MaskTextField placaField;
 	@FXML
 	private TextField marcaField;
 	@FXML
@@ -22,6 +25,19 @@ public class VeiculoAddDialogController {
 
 	@FXML
 	private void initialize(){
+		placaField.setMask("LLL-NNNN");
+		placaField.textProperty().addListener((ov, oldValue, newValue) -> {
+    		placaField.setText(newValue.toUpperCase());
+    	});
+		marcaField.textProperty().addListener((ov, oldValue, newValue) -> {
+			marcaField.setText(newValue.toUpperCase());
+    	});
+		corField.textProperty().addListener((ov, oldValue, newValue) -> {
+			corField.setText(newValue.toUpperCase());
+    	});
+		modeloField.textProperty().addListener((ov, oldValue, newValue) -> {
+			modeloField.setText(newValue.toUpperCase());
+    	});
 	}
 
 	public void setDialogStage(Stage dialogStage){
@@ -54,38 +70,12 @@ public class VeiculoAddDialogController {
         dialogStage.close();
     }
 	 private boolean isInputValid() {
-		 /*String errorMessage = "";
-	        if (firstNameField.getText() == null || firstNameField.getText().length() == 0) {
-	            errorMessage += "Nome inválido!\n";
+		 String errorMessage = "";
+	        if (placaField.getText() == null || placaField.getText().length() == 0) {
+	            errorMessage += "Placa é obrigatoria!\n";
 	        }
-	        if (lastNameField.getText() == null || lastNameField.getText().length() == 0) {
-	            errorMessage += "Sobrenome inválido!\n";
-	        }
-	        if (streetField.getText() == null || streetField.getText().length() == 0) {
-	            errorMessage += "Rua inválida!\n";
-	        }
-
-	        if (postalCodeField.getText() == null || postalCodeField.getText().length() == 0) {
-	            errorMessage += "Código Postal inválido!\n";
-	        } else {
-	            // tenta converter o código postal em um int.
-	            try {
-	                Integer.parseInt(postalCodeField.getText());
-	            } catch (NumberFormatException e) {
-	                errorMessage += "Código Postal inválido (deve ser um inteiro)!\n";
-	            }
-	        }
-
-	        if (cityField.getText() == null || cityField.getText().length() == 0) {
-	            errorMessage += "Cidade inválida!\n";
-	        }
-
-	        if (birthdayField.getText() == null || birthdayField.getText().length() == 0) {
-	            errorMessage += "Aniversário inválido!\n";
-	        } else {
-	            if (!DateUtil.validDate(birthdayField.getText())) {
-	                errorMessage += "Aniversário inválido. Use o formato dd.mm.yyyy!\n";
-	            }
+	        if(placaField.getLength() < 8 ){
+	        	errorMessage += "Placa inválido!\n";
 	        }
 
 	        if (errorMessage.length() == 0) {
@@ -99,7 +89,6 @@ public class VeiculoAddDialogController {
 	                alert.showAndWait();
 
 	            return false;
-	        }*/
-	       return true;
+	        }
 	    }
 }

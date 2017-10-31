@@ -13,7 +13,7 @@ import java.time.format.DateTimeParseException;
 public class DateUtil {
 
     /** O padrão usado para conversão. Mude como quiser. */
-    private static final String DATE_PATTERN = "dd.MM.yyyy";
+    private static final String DATE_PATTERN = "dd/MM/yyyy HH:mm:ss.S";
 
     /** O formatador de data. */
     private static final DateTimeFormatter DATE_FORMATTER =
@@ -26,7 +26,7 @@ public class DateUtil {
      * @param date A data a ser retornada como String
      * @return String formadado
      */
-    public static String format(LocalDate date) {
+    public static String format(LocalDateTime date) {
         if (date == null) {
             return null;
         }

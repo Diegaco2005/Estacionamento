@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import javafx.beans.property.IntegerProperty;
@@ -12,17 +13,19 @@ public class Login {
 
 	private final IntegerProperty idLogin;
 	private final StringProperty login;
+	private final StringProperty senha;
 
 
 	public Login(){
-    	this(0, null);
+    	this(0, null, null);
     }
 	public Login(Integer idLogin){
-    	this(idLogin, null);
+    	this(idLogin, null, null);
     }
-    public Login(Integer idLogin, String login){
+    public Login(Integer idLogin, String login, String senha){
     	this.idLogin = new SimpleIntegerProperty(idLogin);
     	this.login =  new SimpleStringProperty(login);
+    	this.senha =  new SimpleStringProperty(senha);
     }
 
 
@@ -40,13 +43,30 @@ public class Login {
 	public String getlogin() {
         return login.get();
     }
-
-    public void setlogin(String login) {
+    public void setLogin(String login) {
         this.login.set(login);
     }
-
     public StringProperty loginProperty() {
         return login;
+    }
+
+    public String getSenha() {
+        return senha.get();
+    }
+    public void setSenha(String senha) {
+        this.senha.set(senha);
+    }
+    public StringProperty senhaProperty() {
+        return senha;
+    }
+    public boolean autentica(){
+    	try {
+			return new LoginDAO().autentica(this);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return false;
     }
 
 }
